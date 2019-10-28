@@ -39,7 +39,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         while True:
             data = conn.recv(1024)
             message = json.loads(data)
-            action_with_hash(message, hash, conn)
+            try:
+                action_with_hash(message, hash, conn)
+            except:
+                conn.sendall("Bad request".encode("utf-8"))
             my_file = open("var/log/server.log", 'a')
             my_file.write(data.decode('utf-8'))
             conn.sendall("OK:".encode('utf-8')+message["action"].encode("utf-8"))
