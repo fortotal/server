@@ -1,0 +1,10 @@
+version: '3'
+services:
+  server:
+    build: .
+    ports:
+    - "65430:65430"
+    environment:
+    - CORE_IP=127.0.0.1
+    command: server.py
+
