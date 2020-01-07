@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import json
 import socket
 
@@ -13,7 +13,7 @@ def action_with_hash(message:dict, hash:dict, conn):
             datafrHash = hash[message["key"]]
             conn.sendall(json.dumps({"status": "Ok", "message": datafrHash}).encode("utf-8"))
         except KeyError:
-            conn.sendall(json.dumps({"status": "Not Found"}).encode("utf-8"))
+            conn.sendall(json.dumps({"status": "Bad Request"}).encode("utf-8"))
         except:
             conn.sendall("Internal Server Error".encode("utf-8"))
     elif action == "put":
@@ -25,8 +25,11 @@ def action_with_hash(message:dict, hash:dict, conn):
 
     elif action == "delete":
         try:
-            del hash[message["key"]]
-            conn.sendall(json.dumps({"status":"OK"}).encode("utf-8"))
+            if message["key"]:
+                del hash[message["key"]]
+                conn.sendall(json.dumps({"status":"OK"}).encode("utf-8"))
+            else:
+                conn.sendall(json.dumps({"status":"Bad request"}).encode("utf-8"))
         except:
             conn.sendall("Internal Server Error".encode("utf-8"))
 
