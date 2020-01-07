@@ -5,12 +5,12 @@ import socket
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
 PORT = 65430        # Port to listen on (non-privileged ports are > 1023)
 
-hash = {}
-def action_with_hash(message:dict, hash:dict, conn):
+hash_1 = {}
+def action_with_hash(message:dict, hash_1:dict, conn):
     action = message["action"]
     if action == "get":
         try:
-            datafrHash = hash[message["key"]]
+            datafrHash = hash_1[message["key"]]
             conn.sendall(json.dumps({"status": "Ok", "message": datafrHash}).encode("utf-8"))
         except KeyError:
             conn.sendall(json.dumps({"status": "Bad Request"}).encode("utf-8"))
@@ -18,7 +18,7 @@ def action_with_hash(message:dict, hash:dict, conn):
             conn.sendall("Internal Server Error".encode("utf-8"))
     elif action == "put":
         try:
-            hash[message["key"]] = message["message"]
+            hash_1[message["key"]] = message["message"]
             conn.sendall(json.dumps({"status":"Create"}).encode("utf-8"))
         except:
             conn.sendall("Internal Server Error".encode("utf-8"))
@@ -26,7 +26,7 @@ def action_with_hash(message:dict, hash:dict, conn):
     elif action == "delete":
         try:
             if message["key"]:
-                del hash[message["key"]]
+                del hash_1[message["key"]]
                 conn.sendall(json.dumps({"status":"OK"}).encode("utf-8"))
             else:
                 conn.sendall(json.dumps({"status":"Bad request"}).encode("utf-8"))
@@ -43,7 +43,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             data = conn.recv(1024)
             message = json.loads(data)
             try:
-                action_with_hash(message, hash, conn)
+                action_with_hash(message, hash_1, conn)
             except:
                 conn.sendall("Bad request".encode("utf-8"))
             my_file = open("var/log/server.log", 'a')
